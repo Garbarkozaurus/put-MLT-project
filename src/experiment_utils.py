@@ -60,6 +60,22 @@ def regularization_experiment(
     return np.hstack((regularization_coefficients, accuracies))
 
 
+def multiple_experiments(
+    dataset: Literal["penguins"] | Literal["wine"],
+    model_type: Literal["linear"] | Literal["rbf"],
+    num_runs: int = 100,
+) -> None:
+    DEFAULT_REGULARIZATION_COEFFICIENTS = np.array([2**x for x in range(-10, 11)])
+    with open(f"{dataset}_results.csv", "a+") as fp:
+        for i in range(num_runs):
+            print(f"STARTING RUN {i+1}")
+            results = regularization_experiment(
+                dataset, model_type, DEFAULT_REGULARIZATION_COEFFICIENTS, i
+            )
+            for reg, train, test in results:
+                fp.write(f"{reg},{train},{test}\n")
+
+
 if __name__ == "__main__":
     reg_coefs = np.array([2**x for x in range(-10, 11)])
     ret = regularization_experiment("penguins", "linear", reg_coefs, verbose=True)
